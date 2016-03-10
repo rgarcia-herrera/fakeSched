@@ -1,11 +1,12 @@
+# coding: utf8
 
-from fake_sched import *
+from fake_scheduler import *
 
 # Entorno 2
-e2 = Entorno(cambios=15, bloqueo=15)
+e2 = Entorno(cambio=15, bloqueo=15)
 
 # el entorno 2 tiene dos procesadores
-e2.procesadores = [ Procesador(), Procesador() ]
+e2.procesadores = [ Procesador(), Procesador(), Procesador(), Procesador() ]
 
 
 queue = [
@@ -28,18 +29,24 @@ queue = [
     Proceso("P", duracion=800,  inicio=4000),
     ]
 
-
 # mientras haya procesos en el queue
 
-while queue:
+while queue:    
     # dar cada proceso al despachador, ya se verá si corre
     for p in queue:
         e2.despacha(p)
 
+        
+    # imprime qué procesador esta ejecutando qué proceso
+    print('aguas',e2)
+
+        
     # el tiempo pasa, actualiza estado de procesadores y procesos
     e2.ejecuta()
 
-    # imprime qué procesador esta ejecutando qué proceso
-    e2.imprime_status()
 
-
+    
+    # quita procesos terminados del queue
+    for p in queue:
+        if p.duracion == 0:
+            del(queue[queue.index(p)])
