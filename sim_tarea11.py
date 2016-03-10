@@ -38,7 +38,7 @@ while queue:
 
         
     # imprime qué procesador esta ejecutando qué proceso
-    print('aguas',e2)
+    print(e2)
 
         
     # el tiempo pasa, actualiza estado de procesadores y procesos
