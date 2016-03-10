@@ -36,8 +36,8 @@ while queue:
     for p in queue:
         e2.despacha(p)
 
-    # el tiempo pasa
-    e2.t += 1
+    # el tiempo pasa, actualiza estado de procesadores y procesos
+    e2.ejecuta()
 
     # imprime qué procesador esta ejecutando qué proceso
     e2.imprime_status()
