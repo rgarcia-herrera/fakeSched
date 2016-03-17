@@ -2,24 +2,23 @@ import random
 
 
 class Entorno(object):
-    def __init__(self, cambio=10, bloqueo=10, procesadores=[]):
-        self.cambio       = cambio
-        self.bloqueo      = bloqueo
+    def __init__(self, procesadores=[]):
         self.procesadores = procesadores
         self.t            = 0
 
     def despacha(self, proceso):
-        for p in self.procesadores:
-            if p.proceso == None:
+        for cpu in self.procesadores:
+            if cpu.status == 'idle':
                 if self.t >= proceso.inicio and proceso.status != 'R':
-                    p.proceso = proceso
+                    cpu.proceso    = proceso
+                    cpu.status     = 'R'
                     proceso.status = 'R'
                     break
             
 
     def ejecuta(self):
         for p in self.procesadores:
-            p.procesa(bloqueo=self.bloqueo)
+            p.procesa()
         self.t+= 1
 
 
@@ -27,27 +26,36 @@ class Entorno(object):
         return "%s %s" % (self.t, [p for p in self.procesadores])
         
 class Procesador(object):
-    def __init__(self):
+    def __init__(self, cambio=10, bloqueo=10):
+        self.cambio  = cambio
+        self.bloqueo = bloqueo
         self.proceso = None
+        self.status  = 'idle'
+        self.tct     = cambio
 
-    def procesa(self, bloqueo):
-        if self.proceso:
-            # if self.proceso.bloqueos > 0:
-            #     if random.choice([True, False]):
-            #         self.proceso.status = 'B'
-            #         self.proceso.bloqueos -= 1
-                    
+    def procesa(self):
+        if self.status == 'TCT':
+            self.tct -= 1
+            if self.tct == 0:
+                self.status = 'idle'
+                self.tct = self.cambio
+
+            
+        elif self.proceso:                    
             if self.proceso.tiempo_de_ejecucion < self.proceso.duracion and self.proceso.status != 'B':
+                self.statsus = 'R'
                 self.proceso.tiempo_de_ejecucion += 1
             else:
                 self.proceso.status = 'F'
                 self.proceso = None
+                # al terminar un proceso hay que entrar en tiempo de cambio de contexto
+                self.status  = 'TCT'
 
     def __repr__(self):
         if self.proceso:
-            return "<cpu pid=%s>" % self.proceso.pid
+            return "<cpu %s %s>" % (self.status, self.proceso)
         else:
-            return "<cpu idle>"
+            return "<cpu %s>" % self.status
         
 
 class Proceso(object):
@@ -60,4 +68,4 @@ class Proceso(object):
         self.status   = None
 
     def __repr__(self):
-        return "<p %s %s d%s e%s>" % (self.pid, self.status, self.duracion, self.tiempo_de_ejecucion)
+        return "(pid=%s st=%s pendiente=%s)" % (self.pid, self.status, self.duracion-self.tiempo_de_ejecucion)
