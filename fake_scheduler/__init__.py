@@ -19,7 +19,7 @@ class Entorno(object):
 
     def ejecuta(self):
         for p in self.procesadores:
-            p.procesa()
+            p.procesa(bloqueo=self.bloqueo)
         self.t+= 1
 
 
@@ -30,10 +30,15 @@ class Procesador(object):
     def __init__(self):
         self.proceso = None
 
-    def procesa(self):
+    def procesa(self, bloqueo):
         if self.proceso:
-            if self.proceso.duracion > 0:
-                self.proceso.duracion -= 1
+            # if self.proceso.bloqueos > 0:
+            #     if random.choice([True, False]):
+            #         self.proceso.status = 'B'
+            #         self.proceso.bloqueos -= 1
+                    
+            if self.proceso.tiempo_de_ejecucion < self.proceso.duracion and self.proceso.status != 'B':
+                self.proceso.tiempo_de_ejecucion += 1
             else:
                 self.proceso.status = 'F'
                 self.proceso = None
@@ -46,11 +51,13 @@ class Procesador(object):
         
 
 class Proceso(object):
-    def __init__(self, pid, duracion, inicio):
+    def __init__(self, pid, duracion, inicio, bloqueos):
         self.pid      = pid
         self.duracion = duracion
         self.inicio   = inicio
+        self.bloqueos = bloqueos
+        self.tiempo_de_ejecucion = 0
         self.status   = None
 
     def __repr__(self):
-        return "<p %s %s>" % (self.pid, self.status)
+        return "<p %s %s d%s e%s>" % (self.pid, self.status, self.duracion, self.tiempo_de_ejecucion)
