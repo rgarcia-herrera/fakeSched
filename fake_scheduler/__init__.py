@@ -1,3 +1,4 @@
+
 import random
 
 
@@ -9,7 +10,7 @@ class Entorno(object):
     def despacha(self, proceso):
         for cpu in self.procesadores:
             if cpu.status == 'idle':
-                if self.t >= proceso.inicio and proceso.status != 'R':
+                if self.t >= proceso.inicio and proceso.status != 'R' and proceso.status != 'B':
                     cpu.proceso    = proceso
                     cpu.status     = 'R'
                     proceso.status = 'R'
@@ -26,28 +27,23 @@ class Entorno(object):
         return "%s %s" % (self.t, [p for p in self.procesadores])
         
 class Procesador(object):
-    def __init__(self, cambio=10, bloqueo=10):
-        self.cambio  = cambio
-        self.bloqueo = bloqueo
+    def __init__(self, tiempo_cambio=10):
+        self.tiempo_cambio  = tiempo_cambio
         self.proceso = None
         self.status  = 'idle'
-        self.tct     = cambio
+        self.tct     = tiempo_cambio
 
     def procesa(self):
         if self.status == 'TCT':
             self.tct -= 1
             if self.tct == 0:
                 self.status = 'idle'
-                self.tct = self.cambio
-
-            
-        elif self.proceso:                    
-            if self.proceso.tiempo_de_ejecucion < self.proceso.duracion and self.proceso.status != 'B':
-                self.statsus = 'R'
-                self.proceso.ejecuta()
-
-            else:
-                self.proceso.status = 'F'
+                self.tct = self.tiempo_cambio
+        elif self.proceso and self.status == 'R':
+            self.proceso.ejecuta()
+            # tras ejecutarlo una unidad vemos si no ha terminado
+            if self.proceso.status == 'F':
+                # quitamos proceso terminado
                 self.proceso = None
                 # al terminar un proceso hay que entrar en tiempo de cambio de contexto
                 self.status  = 'TCT'
@@ -60,17 +56,39 @@ class Procesador(object):
         
 
 class Proceso(object):
-    def __init__(self, pid, duracion, inicio, bloqueos):
+    def __init__(self, pid, duracion, inicio, bloqueos, tiempo_bloqueo=10):
         self.pid      = pid
         self.duracion = duracion
         self.inicio   = inicio
         self.bloqueos = bloqueos
+        self.tiempo_bloqueo = tiempo_bloqueo        
         self.tiempo_de_ejecucion = 0
+        self.tiempo_bloqueado    = 0
         self.status   = None
 
     def __repr__(self):
-        return "(pid=%s st=%s pendiente=%s)" % (self.pid, self.status, self.duracion-self.tiempo_de_ejecucion)
+        return "(pid=%s st=%s d=%s t=%s d-t=%s)" % (self.pid, self.status, self.duracion,
+                                                    self.tiempo_de_ejecucion, self.duracion-self.tiempo_de_ejecucion)
 
 
     def ejecuta(self):
-        self.proceso.tiempo_de_ejecucion += 1        
+        if self.status == 'R':
+            # mientras estE corriendo y queden bloqueos pendientes,
+            # tal vez hay que bloquear
+            if self.bloqueos > 0 and random.choice([True, False]):
+                self.bloqueos -= 1
+                self.status = 'B'                
+                self.tiempo_bloqueado = 0
+            else:
+                # ejecucion normal
+                self.tiempo_de_ejecucion += 1
+                
+                # si se alcanzo el tiempo solicitado, marcar como Finalizado
+                if self.tiempo_de_ejecucion == self.duracion:
+                    self.status = 'F'
+
+        if self.status == 'B':
+            self.tiempo_bloqueado += 1
+
+            if self.tiempo_bloqueado == self.tiempo_bloqueo:
+                self.status = 'R'

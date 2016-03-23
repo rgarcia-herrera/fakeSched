@@ -7,15 +7,15 @@ from time import sleep
 e2 = Entorno()
 
 # el entorno 2 tiene dos procesadores
-e2.procesadores = [ Procesador(cambio=3, bloqueo=15),
-                    Procesador(cambio=3, bloqueo=15) ] # , Procesador(), Procesador() ]
+e2.procesadores = [ Procesador(tiempo_cambio=3),
+                    Procesador(tiempo_cambio=3) ] # , Procesador(), Procesador() ]
 
 
 
 queue = [
-    Proceso("A", duracion=10,  inicio=0, bloqueos=2),
-    Proceso("B", duracion=6,  inicio=0, bloqueos=2),
-    Proceso("C", duracion=4,  inicio=0, bloqueos=2),
+    Proceso("A", duracion=7,  inicio=0, bloqueos=2, tiempo_bloqueo=5),
+    Proceso("B", duracion=6,  inicio=0, bloqueos=2, tiempo_bloqueo=5),
+    Proceso("C", duracion=4,  inicio=0, bloqueos=2, tiempo_bloqueo=5),
     # Proceso("D", duracion=100,  inicio=0,    bloqueos=2),
     # Proceso("E", duracion=1000, inicio=3000, bloqueos=5),
     # Proceso("F", duracion=500,  inicio=0,    bloqueos=3),
@@ -38,7 +38,6 @@ while queue:
     # dar cada proceso al despachador, ya se verá si corre
     for p in queue:
         e2.despacha(p)
-
         
     # imprime qué procesador esta ejecutando qué proceso
     print(e2)
