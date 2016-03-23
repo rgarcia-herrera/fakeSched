@@ -99,19 +99,19 @@ class Proceso(object):
     def ejecuta(self):
         
         if self.status == 'R':
-            # mientras estE corriendo y queden bloqueos pendientes,
-            # tal vez hay que bloquear
-            if self.bloqueos > 0 and random.choice([True, False]):
-                self.bloqueos -= 1
-                self.status = 'B'                
-                self.tiempo_bloqueado = 0
-            else:
-                # ejecucion normal
-                self.tiempo_de_ejecucion += 1
+            # ejecucion normal
+            self.tiempo_de_ejecucion += 1 
                 
-                # si se alcanzo el tiempo solicitado, marcar como Finalizado
-                if self.tiempo_de_ejecucion == self.duracion:
+            # si se alcanzo el tiempo solicitado, marcar como Finalizado
+            if self.tiempo_de_ejecucion == self.duracion:
                     self.status = 'F'
+            else:
+                # mientras estE corriendo y queden bloqueos pendientes,
+                # tal vez hay que bloquear
+                if self.bloqueos > 0 and random.choice([True, False]):
+                    self.bloqueos -= 1
+                    self.status = 'B'                
+                    self.tiempo_bloqueado = 0
 
 
         # si el proceso esta bloqueado aumentar el contador de bloqueo
