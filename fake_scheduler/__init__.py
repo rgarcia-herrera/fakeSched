@@ -44,7 +44,8 @@ class Procesador(object):
         elif self.proceso:                    
             if self.proceso.tiempo_de_ejecucion < self.proceso.duracion and self.proceso.status != 'B':
                 self.statsus = 'R'
-                self.proceso.tiempo_de_ejecucion += 1
+                self.proceso.ejecuta()
+
             else:
                 self.proceso.status = 'F'
                 self.proceso = None
@@ -69,3 +70,7 @@ class Proceso(object):
 
     def __repr__(self):
         return "(pid=%s st=%s pendiente=%s)" % (self.pid, self.status, self.duracion-self.tiempo_de_ejecucion)
+
+
+    def ejecuta(self):
+        self.proceso.tiempo_de_ejecucion += 1        
