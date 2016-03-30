@@ -23,6 +23,11 @@ Para ejecutarlo:
 
 ## Simulación de un Proceso y un Procesador
 
+A continuación usamos la biblioteca fakeSched para implementar una simulación muy simple.
+
+Considere el siguiente código, con especial atención a los comentarios:
+
+
 ```python
 # coding: utf-8
 # Esta simulación muestra el uso de un entorno con un sólo CPU y un sólo proceso.
