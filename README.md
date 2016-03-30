@@ -1,4 +1,4 @@
-# fakeSched
+# La biblioteca fakeSched
 
 Este proyecto consiste de una biblioteca para la creación de
 simulaciones que ejemplifiquen algunos conceptos de administración de
@@ -7,23 +7,21 @@ procesos en un sistema operativo. Se desarrolla como parte del curso
 [Maestría en Ciencias de la Computación de la Fundación Arturo
 Rosenblueth](http://www.rosenblueth.mx/sitio/index.php?option=com_content&task=category&sectionid=6&id=26&Itemid=56)
 
-
-
-
-## Introducción
-
-La biblioteca fakeSched permite la creación de simulaciones de filas
-de ejecución de procesos que han de ejecutarse en entornos que pueden
+La biblioteca
+[fakeSched](https://github.com/rgarcia-herrera/fakeSched) permite la
+simulación de procesos que han de ejecutarse en entornos que pueden
 tener uno o más procesadores.
 
 Consiste de tres clases:
- * Entorno
- * Procesador
- * Proceso
+
+* Entorno
+* Procesador
+* Proceso
 
 Considerese el siguiente dibujito:
 
 <img src="clases_objetos.png">
+![Clases-objetos y sus interacciones.](clases_objetos.png)
 
 El queue no es una clase pues se trata de una mera lista que contiene
 procesos.
@@ -35,7 +33,7 @@ Con el paso de cada unidad de tiempo los procesadores van cambiando de
 estado y van alterando el estado de los Procesos que les despachan.
 
 
-# Procesador
+# Clase Procesador
 
 Se crean objetos tipo procesador a partir de la clase, así:
 
@@ -64,13 +62,13 @@ contexto está "idle".
 Cuando un procesador tiene asignado un proceso, está en estado 'R'.
 
 
-# Proceso
+# Clase Proceso
 
 Los objetos proceso se crean a partir de la clase usando su constructor, asi:
 
 ```python
 
-A= Proceso("A",
+A = Proceso("A",
             duracion = 300, 
             inicio   = 3,   
             bloqueos = 10,
@@ -79,10 +77,11 @@ A= Proceso("A",
 ```
 
 Los argumentos son:
- * duracion: tiempo de ejecución que debe acumular el proceso, independientemente del tiempo de la simulación.
- * inicio: en que momento debe empezar a ejecutarse.
- * bloqueos: cuantas veces puede bloquearse, al azar, durante la simulación.
- * tiempo de bloqueo: cuantas unidades de tiempo deben transcurrir mientras el proceso esté en estado "B".
+
+* duracion: tiempo de ejecución que debe acumular el proceso, independientemente del tiempo de la simulación.
+* inicio: en que momento debe empezar a ejecutarse.
+* bloqueos: cuantas veces puede bloquearse, al azar, durante la simulación.
+* tiempo de bloqueo: cuantas unidades de tiempo deben transcurrir mientras el proceso esté en estado "B".
 
 
 ## Estados de un Proceso
@@ -103,7 +102,7 @@ Cuando un proceso es asigando a un procesador está en estado
 "R". Durante este estado acumula tiempo de ejecución.
 
 
-## Simulación de un Proceso y un Procesador
+# Simulación de un Proceso y un Procesador
 
 A continuación usamos la biblioteca fakeSched para implementar una
 simulación muy simple.
@@ -323,7 +322,7 @@ Los primeros procesos en ejecutarse son B y C pues A y D tienen
 tiempos de inicio posteriores.
 
 El segundo procesador tiene un quantum de 5 unidades de tiempo, por lo
-que con ese periodo cambia de proceso y entra en estado TCT.
+que periódicamente cambia de proceso y entra en estado TCT.
 
 El proceso A se bloquea cuatro veces durante una sóla unidad de
-tiempo.
+tiempo cada vez.
