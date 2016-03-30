@@ -202,3 +202,128 @@ interrupción hasta que se le acaba otra vez el quantum en t=13.
 
 Después de otras dos unidades de estado TCT, termina finalmente la
 simulación en el t=15.
+
+
+
+# Una simulación más complicada
+
+
+La siguiente simulación es más complicada por varias razones: son más
+procesos y más procesadores, pero además procesos y procesadores
+tienen parámetros diferentes.
+
+Obsérvese cómo un procesador tiene un quantum mucho más largo que
+cualquier proceso, esto tendrá el efecto de que no interrumpirá a
+ninguno.
+
+También se especifican un par de procesos que no se bloquearán.
+
+
+```python
+# coding: utf-8
+
+from fake_scheduler import *
+from time import sleep
+
+
+
+e = Entorno()
+
+
+# el entorno tiene 2 procesadores con diferentes quanta
+e.procesadores = [ Procesador(tiempo_cambio = 2,
+                              quantum       = 3000),
+                   Procesador(tiempo_cambio = 2,
+                              quantum       = 5),
+               ]
+
+
+
+queue = [
+    Proceso("A", duracion=20,
+            inicio=3,  
+            bloqueos=2, tiempo_bloqueo=1),
+    Proceso("B", duracion=10,
+            inicio=0,  
+            bloqueos=0),
+    Proceso("C", duracion=15,
+            inicio=0,  
+            bloqueos=1, tiempo_bloqueo=2),
+    Proceso("D", duracion=4,
+            inicio=5,  
+            bloqueos=0)
+
+]
+
+
+
+
+while queue:    
+
+    for p in queue:
+        e.despacha(p)
+        
+
+    print(e)
+
+    e.ejecuta()
+
+    
+    # quita procesos terminados del queue
+    for p in queue:
+        if p.status == 'F':
+            del(queue[queue.index(p)])
+```
+
+La simulación corre con este comando:
+
+    $ python simulacion_4proceso_2cpus.py
+
+
+Genera una tabla parecida a la siguiente:
+
+    0 [<cpu R (pid=B st=R d=10 t=0 d-t=10)>, <cpu R (pid=C st=R d=15 t=0 d-t=15)>]
+    1 [<cpu R (pid=B st=R d=10 t=1 d-t=9)>, <cpu R (pid=C st=B d=15 t=1 d-t=14)>]
+    2 [<cpu R (pid=B st=R d=10 t=2 d-t=8)>, <cpu R (pid=C st=B d=15 t=1 d-t=14)>]
+    3 [<cpu R (pid=B st=R d=10 t=3 d-t=7)>, <cpu R (pid=C st=R d=15 t=1 d-t=14)>]
+    4 [<cpu R (pid=B st=R d=10 t=4 d-t=6)>, <cpu R (pid=C st=R d=15 t=2 d-t=13)>]
+    5 [<cpu R (pid=B st=R d=10 t=5 d-t=5)>, <cpu TCT>]
+    6 [<cpu R (pid=B st=R d=10 t=6 d-t=4)>, <cpu TCT>]
+    7 [<cpu R (pid=B st=R d=10 t=7 d-t=3)>, <cpu R (pid=A st=R d=20 t=0 d-t=20)>]
+    8 [<cpu R (pid=B st=R d=10 t=8 d-t=2)>, <cpu R (pid=A st=R d=20 t=1 d-t=19)>]
+    9 [<cpu R (pid=B st=R d=10 t=9 d-t=1)>, <cpu R (pid=A st=R d=20 t=2 d-t=18)>]
+    10 [<cpu TCT>, <cpu R (pid=A st=R d=20 t=3 d-t=17)>]
+    11 [<cpu TCT>, <cpu R (pid=A st=B d=20 t=4 d-t=16)>]
+    12 [<cpu R (pid=A st=R d=20 t=4 d-t=16)>, <cpu TCT>]
+    13 [<cpu R (pid=A st=R d=20 t=5 d-t=15)>, <cpu TCT>]
+    14 [<cpu R (pid=A st=B d=20 t=6 d-t=14)>, <cpu R (pid=C st=R d=15 t=3 d-t=12)>]
+    15 [<cpu R (pid=A st=R d=20 t=6 d-t=14)>, <cpu R (pid=C st=R d=15 t=4 d-t=11)>]
+    16 [<cpu R (pid=A st=R d=20 t=7 d-t=13)>, <cpu R (pid=C st=R d=15 t=5 d-t=10)>]
+    17 [<cpu R (pid=A st=R d=20 t=8 d-t=12)>, <cpu R (pid=C st=R d=15 t=6 d-t=9)>]
+    18 [<cpu R (pid=A st=R d=20 t=9 d-t=11)>, <cpu R (pid=C st=R d=15 t=7 d-t=8)>]
+    19 [<cpu R (pid=A st=R d=20 t=10 d-t=10)>, <cpu TCT>]
+    20 [<cpu R (pid=A st=R d=20 t=11 d-t=9)>, <cpu TCT>]
+    21 [<cpu R (pid=A st=R d=20 t=12 d-t=8)>, <cpu R (pid=C st=R d=15 t=8 d-t=7)>]
+    22 [<cpu R (pid=A st=R d=20 t=13 d-t=7)>, <cpu R (pid=C st=R d=15 t=9 d-t=6)>]
+    23 [<cpu R (pid=A st=R d=20 t=14 d-t=6)>, <cpu R (pid=C st=R d=15 t=10 d-t=5)>]
+    24 [<cpu R (pid=A st=R d=20 t=15 d-t=5)>, <cpu R (pid=C st=R d=15 t=11 d-t=4)>]
+    25 [<cpu R (pid=A st=R d=20 t=16 d-t=4)>, <cpu R (pid=C st=R d=15 t=12 d-t=3)>]
+    26 [<cpu R (pid=A st=R d=20 t=17 d-t=3)>, <cpu TCT>]
+    27 [<cpu R (pid=A st=R d=20 t=18 d-t=2)>, <cpu TCT>]
+    28 [<cpu R (pid=A st=R d=20 t=19 d-t=1)>, <cpu R (pid=C st=R d=15 t=13 d-t=2)>]
+    29 [<cpu TCT>, <cpu R (pid=C st=R d=15 t=14 d-t=1)>]
+    30 [<cpu TCT>, <cpu TCT>]
+    31 [<cpu R (pid=D st=R d=4 t=0 d-t=4)>, <cpu TCT>]
+    32 [<cpu R (pid=D st=R d=4 t=1 d-t=3)>, <cpu idle>]
+    33 [<cpu R (pid=D st=R d=4 t=2 d-t=2)>, <cpu idle>]
+    34 [<cpu R (pid=D st=R d=4 t=3 d-t=1)>, <cpu idle>]
+
+
+Los primeros procesos en ejecutarse son B y C pues A y D tienen
+tiempos de inicio posteriores.
+
+El segundo procesador tiene un quantum de 5 unidades de tiempo, por lo
+que con ese periodo cambia de proceso y entra en estado TCT.
+
+El proceso A se bloquea cuatro veces durante una sóla unidad de
+tiempo.
