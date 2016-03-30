@@ -29,7 +29,7 @@ El queue no es una clase pues se trata de una mera lista que contiene
 procesos.
 
 Un objeto Entorno tiene un método despachador que toma procesos del
-queue y se los da a sus Procesadores.
+queue y se los da a sus Procesadores (puede tener uno o más).
 
 Con el paso de cada unidad de tiempo los procesadores van cambiando de
 estado y van alterando el estado de los Procesos que les despachan.
@@ -71,10 +71,10 @@ Los objetos proceso se crean a partir de la clase usando su constructor, asi:
 ```python
 
 A= Proceso("A",
-            duracion = 300, # tiempo de duracion del proceso
-            inicio   = 3,   # en que momento debe empezar a ejecutarse
-            bloqueos = 10,  # cuantas veces puede bloquearse, al azar
-            tiempo_bloqueo=2), # cuanto dura el tiempo de bloqueo
+            duracion = 300, 
+            inicio   = 3,   
+            bloqueos = 10,
+            tiempo_bloqueo=2),
 
 ```
 
@@ -87,25 +87,35 @@ Los argumentos son:
 
 ## Estados de un Proceso
 ### Wait
-Cuando un proceso no ha sido asignado a un procesador está en estado 'W'.
+
+Cuando un proceso no ha sido asignado a un procesador está en estado
+'W'.
 
 ### Bloqueado
-Cuando un proceso al azar entra en estado de bloqueado su estado es "B". Permanecerá en este estado hasta que se acumule tiempo de ejecución en que haya estado en este estado.
+
+Cuando un proceso al azar entra en estado de bloqueado
+su estado es "B". Permanecerá en este estado hasta que se acumule
+tiempo de ejecución en que haya estado en este estado.
 
 ### Running
-Cuando un proceso es asigando a un procesador está en estado "R". Durante este estado acumula tiempo de ejecución.
+
+Cuando un proceso es asigando a un procesador está en estado
+"R". Durante este estado acumula tiempo de ejecución.
 
 
 ## Simulación de un Proceso y un Procesador
 
-A continuación usamos la biblioteca fakeSched para implementar una simulación muy simple.
+A continuación usamos la biblioteca fakeSched para implementar una
+simulación muy simple.
 
 Considere el siguiente código, con especial atención a los comentarios:
 
 
 ```python
 # coding: utf-8
-# Esta simulación muestra el uso de un entorno con un sólo CPU y un sólo proceso.
+
+# Esta simulación muestra el uso de un entorno con un sólo CPU y un
+# sólo proceso.
 
 
 from fake_scheduler import *
@@ -114,21 +124,20 @@ from time import sleep
 # Entorno
 e = Entorno()
 
-# el entorno 1 sólo procesador, 
-e.procesadores = [ Procesador(tiempo_cambio = 2, # cuyo tiempo de cambio de contexto es 2
-			      quantum       = 4) # quantum de 4 unidades de tiempo
-	       ]
-
+# el entorno tiene 1 sólo procesador
+e.procesadores = [ Procesador(tiempo_cambio = 2,
+                              quantum       = 4), ]
 
 
 # en el queue hay un sólo proceso
 queue = [
     # el proceso con el PID=A
     Proceso("A",
-            duracion=7, # debe durar 7 unidades   <--- aguas
+            duracion=7, # debe durar 7 unidades 
             inicio=3,   # pero no puede empezar antes de que t=3
             bloqueos=1, # puede bloquearse, al azar, una vez
-            tiempo_bloqueo=2), # si se bloquea, será por dos unidades de tiempo
+            tiempo_bloqueo=2), # si se bloquea, será por dos unidades
+                               # de tiempo
     ]
 
 # mientras haya procesos en el queue
@@ -138,7 +147,7 @@ while queue:
         e.despacha(p)
         
     # imprime qué procesador esta ejecutando qué proceso
-    print(e)  # la clase Entorno tiene un método para representarse como string
+    print(e)
 
     # el tiempo pasa, actualiza estado de procesadores y procesos
     e.ejecuta()
