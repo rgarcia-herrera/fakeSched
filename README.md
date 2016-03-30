@@ -12,3 +12,8 @@ Para ejecutarlo:
     $ python sim_tarea11.py
  
 
+
+
+## Introducción
+
+<img src="clases_objetos.png">
