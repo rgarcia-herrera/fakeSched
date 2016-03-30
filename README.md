@@ -20,7 +20,6 @@ Consiste de tres clases:
 
 Considerese el siguiente dibujito:
 
-<img src="clases_objetos.png">
 ![Clases-objetos y sus interacciones.](clases_objetos.png)
 
 El queue no es una clase pues se trata de una mera lista que contiene
