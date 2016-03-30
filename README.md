@@ -1,24 +1,99 @@
 # fakeSched
 
-Este software ejemplifica algunos conceptos de administración de
+Este proyecto consiste de una biblioteca para la creación de
+simulaciones que ejemplifiquen algunos conceptos de administración de
 procesos en un sistema operativo. Se desarrolla como parte del curso
-"Sistemas Operativos" impartido por el Dr. Yoel Ledo en el
-programa de [Maestría en Ciencias de la Computación de la Fundación
-Arturo Rosenblueth](http://www.rosenblueth.mx/sitio/index.php?option=com_content&task=category&sectionid=6&id=26&Itemid=56)
+"Sistemas Operativos" impartido por el Dr. Yoel Ledo en el programa de
+[Maestría en Ciencias de la Computación de la Fundación Arturo
+Rosenblueth](http://www.rosenblueth.mx/sitio/index.php?option=com_content&task=category&sectionid=6&id=26&Itemid=56)
 
-
-Para ejecutarlo:
-
-    $ python sim_tarea11.py
- 
 
 
 
 ## Introducción
 
+La biblioteca fakeSched permite la creación de simulaciones de filas
+de ejecución de procesos que han de ejecutarse en entornos que pueden
+tener uno o más procesadores.
+
+Consiste de tres clases:
+ * Entorno
+ * Procesador
+ * Proceso
+
+Considerese el siguiente dibujito:
+
 <img src="clases_objetos.png">
 
+El queue no es una clase pues se trata de una mera lista que contiene
+procesos.
 
+Un objeto Entorno tiene un método despachador que toma procesos del
+queue y se los da a sus Procesadores.
+
+Con el paso de cada unidad de tiempo los procesadores van cambiando de
+estado y van alterando el estado de los Procesos que les despachan.
+
+
+# Procesador
+
+Se crean objetos tipo procesador a partir de la clase, así:
+
+```python
+cpu = Procesador(tiempo_cambio = 20, 
+                 quantum       = 4000)
+
+```
+
+## Estados de un Procesador
+
+### TCT: Tiempo de Cambio de Contexto
+
+Al cambiar de un proceso a otro, ya sea por finalización o por
+agotamiento de quantum, los Procesadores adoptan el estado de TCT por
+el tiempo definido al construir el objeto.
+
+
+### idle
+
+Un procesador que no está ejecutando un proceso y no está cambiando de
+contexto está "idle".
+
+### Running o 'R'
+
+Cuando un procesador tiene asignado un proceso, está en estado 'R'.
+
+
+# Proceso
+
+Los objetos proceso se crean a partir de la clase usando su constructor, asi:
+
+```python
+
+A= Proceso("A",
+            duracion = 300, # tiempo de duracion del proceso
+            inicio   = 3,   # en que momento debe empezar a ejecutarse
+            bloqueos = 10,  # cuantas veces puede bloquearse, al azar
+            tiempo_bloqueo=2), # cuanto dura el tiempo de bloqueo
+
+```
+
+Los argumentos son:
+ * duracion: tiempo de ejecución que debe acumular el proceso, independientemente del tiempo de la simulación.
+ * inicio: en que momento debe empezar a ejecutarse.
+ * bloqueos: cuantas veces puede bloquearse, al azar, durante la simulación.
+ * tiempo de bloqueo: cuantas unidades de tiempo deben transcurrir mientras el proceso esté en estado "B".
+
+
+## Estados de un Proceso
+### Wait
+Cuando un proceso no ha sido asignado a un procesador está en estado 'W'.
+
+### Bloqueado
+Cuando un proceso al azar entra en estado de bloqueado su estado es "B". Permanecerá en este estado hasta que se acumule tiempo de ejecución en que haya estado en este estado.
+
+### Running
+Cuando un proceso es asigando a un procesador está en estado "R". Durante este estado acumula tiempo de ejecución.
 
 
 ## Simulación de un Proceso y un Procesador
